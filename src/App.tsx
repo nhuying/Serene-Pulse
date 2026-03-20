@@ -217,7 +217,7 @@ const BottomNav = ({ active, onChange, t }: { active: Screen; onChange: (s: Scre
 
 // --- Screen Components ---
 
-const HomeScreen = ({ onBegin, t, key }: { onBegin: () => void; t: any; key?: string }) => (
+const HomeScreen = ({ onBegin, t }: { onBegin: () => void; t: any; key?: string }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -305,7 +305,7 @@ const HomeScreen = ({ onBegin, t, key }: { onBegin: () => void; t: any; key?: st
   </motion.div>
 );
 
-const TrackerScreen = ({ t, key }: { t: any; key?: string }) => {
+const TrackerScreen = ({ t }: { t: any; key?: string }) => {
   const [habits, setHabits] = useState<Habit[]>([
     { id: '1', name: t.fasting168, iconName: 'timer', completed: true, type: 'checkbox' },
     { id: '2', name: t.noSnacking, iconName: 'utensils', completed: true, type: 'checkbox' },
@@ -497,7 +497,7 @@ const TrackerScreen = ({ t, key }: { t: any; key?: string }) => {
   );
 };
 
-const GoalsScreen = ({ t, key }: { t: any; key?: string }) => {
+const GoalsScreen = ({ t }: { t: any; key?: string }) => {
   const [hba1cFrom, setHba1cFrom] = useState('6.4');
   const [hba1cTo, setHba1cTo] = useState('6.0');
   const [medsFrom, setMedsFrom] = useState('2');
@@ -505,6 +505,19 @@ const GoalsScreen = ({ t, key }: { t: any; key?: string }) => {
   const [steps, setSteps] = useState('6000');
   const [stretchMins, setStretchMins] = useState('15');
   const [stretchDays, setStretchDays] = useState('3');
+
+  // Health Metrics State
+  const [height, setHeight] = useState('175');
+  const [initialWeight, setInitialWeight] = useState('94.5');
+  const [targetWeight, setTargetWeight] = useState('82.0');
+  const [waist, setWaist] = useState('102');
+
+  const [glucose, setGlucose] = useState('112');
+  const [hba1cVal, setHba1cVal] = useState('6.4');
+  const [bp, setBp] = useState('138/88');
+  const [triglyc, setTriglyc] = useState('160');
+  const [hdl, setHdl] = useState('42');
+  const [ldl, setLdl] = useState('134');
 
   return (
     <motion.div 
@@ -609,51 +622,64 @@ const GoalsScreen = ({ t, key }: { t: any; key?: string }) => {
       <section className="space-y-6">
         <h3 className="font-headline text-xl font-bold px-1">{t.healthMetrics}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-6 rounded-[24px] bg-surface-container-lowest border border-outline/5 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
-            <User className="text-secondary" size={18} />
-            <h4 className="text-sm font-bold uppercase tracking-wider">{t.bodyComposition}</h4>
-          </div>
-          <div className="space-y-4">
-            {[
-              { label: t.height, value: '175', unit: 'cm' },
-              { label: t.initialWeight, value: '94.5', unit: 'kg' },
-              { label: t.targetWeight, value: '82.0', unit: 'kg', highlight: true },
-              { label: t.waistCirc, value: '102', unit: 'cm' },
-            ].map(item => (
-              <div key={item.label} className="flex justify-between items-center">
-                <span className="text-sm text-on-surface-variant">{item.label}</span>
-                <div className="flex items-center gap-1">
-                  <span className={cn("font-bold", item.highlight ? "text-secondary" : "text-on-surface")}>{item.value}</span>
-                  <span className="text-xs text-outline">{item.unit}</span>
+          <div className="p-6 rounded-[24px] bg-surface-container-lowest border border-outline/5 shadow-sm">
+            <div className="flex items-center gap-2 mb-6">
+              <User className="text-secondary" size={18} />
+              <h4 className="text-sm font-bold uppercase tracking-wider">{t.bodyComposition}</h4>
+            </div>
+            <div className="space-y-4">
+              {[
+                { label: t.height, value: height, setter: setHeight, unit: 'cm' },
+                { label: t.initialWeight, value: initialWeight, setter: setInitialWeight, unit: 'kg' },
+                { label: t.targetWeight, value: targetWeight, setter: setTargetWeight, unit: 'kg', highlight: true },
+                { label: t.waistCirc, value: waist, setter: setWaist, unit: 'cm' },
+              ].map(item => (
+                <div key={item.label} className="flex justify-between items-center">
+                  <span className="text-sm text-on-surface-variant">{item.label}</span>
+                  <div className="flex items-center gap-1">
+                    <input 
+                      type="text"
+                      value={item.value}
+                      onChange={(e) => item.setter(e.target.value)}
+                      className={cn(
+                        "w-16 bg-surface-container-low border-none rounded px-2 py-1 text-right font-bold focus:ring-1 focus:ring-primary",
+                        item.highlight ? "text-secondary" : "text-on-surface"
+                      )}
+                    />
+                    <span className="text-xs text-outline">{item.unit}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+          <div className="p-6 rounded-[24px] bg-surface-container-lowest border border-outline/5 shadow-sm">
+            <div className="flex items-center gap-2 mb-6">
+              <BarChart2 className="text-primary" size={18} />
+              <h4 className="text-sm font-bold uppercase tracking-wider">{t.latestBloodwork}</h4>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { label: t.glucose, value: glucose, setter: setGlucose },
+                { label: t.hba1c, value: hba1cVal, setter: setHba1cVal },
+                { label: t.bp, value: bp, setter: setBp },
+                { label: t.triglyc, value: triglyc, setter: setTriglyc },
+                { label: t.hdl, value: hdl, setter: setHdl },
+                { label: t.ldl, value: ldl, setter: setLdl },
+              ].map(item => (
+                <div key={item.label} className="space-y-1">
+                  <label className="text-[10px] text-on-surface-variant uppercase font-bold">{item.label}</label>
+                  <input 
+                    type="text"
+                    value={item.value}
+                    onChange={(e) => item.setter(e.target.value)}
+                    className="w-full bg-surface-container-low border-none rounded-lg px-2 py-1 text-sm font-bold focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="p-6 rounded-[24px] bg-surface-container-lowest border border-outline/5 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
-            <BarChart2 className="text-primary" size={18} />
-            <h4 className="text-sm font-bold uppercase tracking-wider">{t.latestBloodwork}</h4>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: t.glucose, value: '112' },
-              { label: t.hba1c, value: '6.4' },
-              { label: t.bp, value: '138/88' },
-              { label: t.triglyc, value: '160' },
-              { label: t.hdl, value: '42' },
-              { label: t.ldl, value: '134' },
-            ].map(item => (
-              <div key={item.label} className="space-y-1">
-                <label className="text-[10px] text-on-surface-variant uppercase font-bold">{item.label}</label>
-                <div className="bg-surface-container-low rounded-lg px-2 py-1 text-sm font-bold">{item.value}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
 
     <section className="p-8 rounded-[32px] bg-primary text-on-primary flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-primary-container rounded-full blur-[80px] opacity-40 -translate-y-1/2 translate-x-1/2"></div>
@@ -830,7 +856,7 @@ const HabitModal = ({
   );
 };
 
-const AssessScreen = ({ t, key }: { t: any; key?: string }) => {
+const AssessScreen = ({ t }: { t: any; key?: string }) => {
   const [metrics, setMetrics] = useState({
     energy: 8,
     clarity: 9,
@@ -942,7 +968,7 @@ const AssessScreen = ({ t, key }: { t: any; key?: string }) => {
   );
 };
 
-const InsightsScreen = ({ t, key }: { t: any; key?: string }) => {
+const InsightsScreen = ({ t }: { t: any; key?: string }) => {
   const weightData = [
     { name: 'W1', val: 35 },
     { name: 'W2', val: 32 },
@@ -1088,7 +1114,7 @@ const InsightsScreen = ({ t, key }: { t: any; key?: string }) => {
   );
 };
 
-const FeedbackScreen = ({ t, key }: { t: any; key?: string }) => (
+const FeedbackScreen = ({ t }: { t: any; key?: string }) => (
   <motion.div 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -1180,7 +1206,7 @@ const FeedbackScreen = ({ t, key }: { t: any; key?: string }) => (
   </motion.div>
 );
 
-const ChatScreen = ({ t, key }: { t: any; key?: string }) => {
+const ChatScreen = ({ t }: { t: any; key?: string }) => {
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([
     { role: 'model', text: t.helloSerene }
   ]);
@@ -1250,7 +1276,7 @@ const ChatScreen = ({ t, key }: { t: any; key?: string }) => {
   );
 };
 
-const ImageGenScreen = ({ t, key }: { t: any; key?: string }) => {
+const ImageGenScreen = ({ t }: { t: any; key?: string }) => {
   const [prompt, setPrompt] = useState('');
   const [size, setSize] = useState<"1K" | "2K" | "4K">("1K");
   const [loading, setLoading] = useState(false);
